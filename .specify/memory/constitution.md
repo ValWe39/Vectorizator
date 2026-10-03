@@ -9,7 +9,7 @@ Removed sections: N/A
 Follow-up TODOs: None
 -->
 
-# [OUTIL] Constitution
+# Vectorizator Constitution
 
 ## Core Principles
 
@@ -148,7 +148,7 @@ conditions strictes suivantes :
 - **Scope** : Le token doit être restreint à **`contents: read`**
   et aucune autre permission.
 - **No Data Transmission** : Le token ne doit **pas** transmettre de
-  données utilisateur, de contenus traités par [OUTIL],
+  données utilisateur, de contenus traités par Vectorizator,
   ou d'informations personnelles à GitHub ou tout tiers.
 - **Tool Limitation** : Seul Zizmor (open-source, Apache-2.0) peut
   utiliser ce token. Aucun autre outil, script ou étape de workflow.
@@ -191,7 +191,7 @@ strictes suivantes :
   étapes.
 - **No Data Transmission** : Ces appels ne doivent **pas**
   transmettre de données utilisateur, de contenus traités par
-  [OUTIL], ou d'informations personnelles.
+  Vectorizator, ou d'informations personnelles.
 - **No Trackers** : Tous les outils téléchargés doivent être
   open-source, sans trackers ni télémétrie intégrés.
 
@@ -266,7 +266,7 @@ le développement local, sous les conditions strictes suivantes :
   Actions ou tout environnement CI distant).
 - **No Data Transmission** : Les hooks ne doivent **pas**
   transmettre de données utilisateur, de contenus traités par
-  [OUTIL], ou d'informations personnelles.
+  Vectorizator, ou d'informations personnelles.
 - **Network Calls** : L'installation initiale des hooks
   (`pre-commit install`) est autorisée **une seule fois par
   environnement développeur** pour la configuration.
