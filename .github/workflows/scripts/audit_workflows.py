@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Audit des workflows GitHub Actions pour [OUTIL].
+Audit des workflows GitHub Actions pour Vectorizator.
 Vérifie :
 - Pas de secrets codés en dur
 - Permissions minimales (contents: read)
