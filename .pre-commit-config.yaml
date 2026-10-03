@@ -1,0 +1,68 @@
+repos:
+  # --- Hooks de base (open-source, MIT, 100% local) ---
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  # --- Détection de secrets (équivalent du job `secrets`) ---
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        exclude: |
+          (?x)^(
+            .github/workflows/diagnostic\.yml
+          )$
+
+  # --- Lint Python (équivalent du job `lint`) ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.8
+    hooks:
+      - id: ruff
+        args: [--fix, --exclude=input/,--exclude=output/,--exclude=Prompts/,--exclude=.vibe/,--exclude=.specify/,--exclude=Licence]
+      - id: ruff-format
+        args: [--exclude=input/,--exclude=output/,--exclude=Prompts/,--exclude=.vibe/,--exclude=.specify/,--exclude=Licence]
+
+  # --- Lint Markdown (équivalent du job `lint`) ---
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.15.0
+    hooks:
+      - id: markdownlint-cli2
+        args: [
+          '**/*.md',
+          '!**/.github/workflows/**',
+          '!**/.specify/**',
+          '**/.specify/memory/**',
+          '!**/input/**',
+          '!**/output/**',
+          '!**/Prompts/**',
+          '!**/.vibe/**',
+          '!Licence'
+        ]
+
+  # --- Vérification constitutionnelle (équivalent du job `constitution-compliance`) ---
+  - repo: local
+    hooks:
+      - id: check-constitution
+        name: Vérifier la conformité à la constitution (diff)
+        entry: python .github/workflows/scripts/check_constitution.py --diff HEAD
+        language: system
+        always_run: true
+        pass_filenames: false
+
+      - id: audit-workflows
+        name: Auditer les workflows GitHub Actions
+        entry: python .github/workflows/scripts/audit_workflows.py .github/workflows/
+        language: system
+        always_run: true
+
+
+      - id: check-action-pinning
+        name: Verifier le pinning des actions GitHub
+        entry: python .github/workflows/scripts/check_action_pinning.py
+        language: system
+        always_run: true
+        pass_filenames: false
