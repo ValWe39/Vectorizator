@@ -17,7 +17,7 @@ régression.
 ## Checks Performed
 
 | Check | Commande | Résultat | Notes |
-|-------|----------|-----------|-------|
+| ------- | ---------- | ----------- | ------- |
 | Reproduction | `vector` sur l'exemple (API réelle) | pass | exit 0 |
 | Sortie | `numpy.load` + inspection | pass | (247, 1024) ; compteur 0002 |
 | Tests | `python -m pytest` | pass | 104 passed |

@@ -30,7 +30,7 @@ vector Examples/            # dossier : tous les .json, tri alphabétique
 Options :
 
 | Option | Défaut | Bornes / valeurs |
-|--------|--------|------------------|
+| -------- | -------- | ------------------ |
 | `--choix-techno` | `mistral-embed` | voir valeurs ci-dessous |
 | `--taille-batch` | 25 | 0 à 100 ; 0 = pas de batch |
 | `--retry-occurences` | 3 | 0 à 10 |

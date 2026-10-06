@@ -19,7 +19,7 @@ vector INPUT [INPUT...] [OPTIONS]
 ## Options
 
 | Option | Type | Défaut | Bornes / valeurs |
-|--------|------|--------|------------------|
+| -------- | ------ | -------- | ------------------ |
 | `--choix-techno` | nom | `mistral-embed` | voir valeurs ci-dessous |
 | `--taille-batch` | int | 25 | 0 à 100 ; 0 = pas de batch |
 | `--retry-occurences` | int | 3 | 0 à 10 |
@@ -66,7 +66,7 @@ tout appel API et sans consommer de numéro d'occurrence (FR-016).
 ## Codes de sortie
 
 | Code | Signification |
-|------|---------------|
+| ------ | --------------- |
 | 0 | Tous les inputs traités avec succès |
 | 1 | Erreur de configuration ou de validation (avant traitement) |
 | 2 | Au moins un document en échec (les autres peuvent avoir réussi) |

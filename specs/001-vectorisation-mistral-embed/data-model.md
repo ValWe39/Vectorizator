@@ -40,7 +40,7 @@ Relation : 1 JSON d'index contient N chunks, ordre significatif.
 Association nom de modèle API / dimension de sortie.
 
 | Nom de modèle | Dimensions | Défaut |
-|---------------|------------|--------|
+| --------------- | ------------ | -------- |
 | `mistral-embed` | 1024 | oui |
 | `mistral-embed-dim256-2510` | 256 | non |
 | `mistral-embed-dim128-2510` | 128 | non |
