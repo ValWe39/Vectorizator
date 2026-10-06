@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "document": {
+    "path": "tests/data/sample_index.md",
+    "title": "Introduction aux Embeddings",
+    "structure": "sections",
+    "typologie": "documentation"
+  },
+  "params": {
+    "chunk_min": 100,
+    "chunk_max": 1000,
+    "overlap_pct": 15,
+    "guillemets": true,
+    "unit": "chars"
+  },
+  "chunks": [
+    {
+      "ref": 1,
+      "text": "Un embedding est une représentation numérique d'un texte.",
+      "length": 61,
+      "boundary": "phrase",
+      "part": "Introduction aux Embeddings",
+      "position_in_part": 1,
+      "atomic": false
+    },
+    {
+      "ref": 2,
+      "text": "Les ordinateurs ne comprennent pas le texte brut.",
+      "length": 47,
+      "boundary": "phrase",
+      "part": "Introduction aux Embeddings",
+      "position_in_part": 2,
+      "atomic": false
+    },
+    {
+      "ref": 3,
+      "text": "Les embeddings traduisent le langage en nombres.",
+      "length": 47,
+      "boundary": "phrase",
+      "part": "Introduction aux Embeddings",
+      "position_in_part": 3,
+      "atomic": false
+    },
+    {
+      "ref": 4,
+      "text": "Un vecteur capture la signification sémantique.",
+      "length": 46,
+      "boundary": "phrase",
+      "part": "Qu'est-ce qu'un embedding",
+      "position_in_part": 1,
+      "atomic": false
+    },
+    {
+      "ref": 5,
+      "text": "Deux textes proches ont des vecteurs proches.",
+      "length": 44,
+      "boundary": "phrase",
+      "part": "Qu'est-ce qu'un embedding",
+      "position_in_part": 2,
+      "atomic": false
+    }
+  ]
+}

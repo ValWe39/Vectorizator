@@ -9,8 +9,11 @@ Fichier au schéma 1.0 ; unité d'entrée du processus, traité
 indépendamment des autres (N inputs = N sorties).
 
 - `schema_version` : chaîne, DOIT valoir `"1.0"`.
-- `document` : objet ; `title` : chaîne non vide (source du nom de
-  sortie) ; `path`, `structure`, `typologie` : lus sans interprétation.
+- `document` : objet ; `title` : optionnel (s'il est présent : chaîne
+  non vide ; absent accepté — exemple réel 016492360000000016.json,
+  session du 2026-10-06) ; non utilisé pour le nommage (fix
+  titre-depuis-nom-json) ; `path`, `structure`, `typologie` : lus sans
+  interprétation.
 - `params` : objet (`chunk_min`, `chunk_max`, `overlap_pct`,
   `guillemets`, `unit`) : lus sans interprétation.
 - `chunks` : liste non vide d'entités Chunk (voir §2) ; l'ordre de la
@@ -67,7 +70,9 @@ Fichier `.npy` produit par document traité avec succès.
 - `shape` : `(n_chunks, dimension_du_modele)` — ligne i <-> chunk i,
   ordre strict (assemblage par `extend`).
 - `dtype` : `float32`.
-- `nom` : `<20 premiers caractères du titre sanitisé>-<NNNN>.npy`.
+- `nom` : `<18 premiers caractères du nom de fichier du JSON
+  (stem sanitisé, sans extension)>-<NNNN>.npy` (ex.
+  `016472351681860015-0001.npy`).
 - `emplacement` : dossier de sortie (`output` par défaut, créé si
   absent ; `--output-folder` pour un chemin alternatif).
 

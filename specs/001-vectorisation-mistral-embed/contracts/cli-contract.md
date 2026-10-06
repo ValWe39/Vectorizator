@@ -37,7 +37,8 @@ tout appel API et sans consommer de numéro d'occurrence (FR-016).
 
 ## Sorties
 
-- Un fichier `<titre 20 car.>-<NNNN>.npy` par JSON traité avec succès,
+- Un fichier `<stem du nom de fichier, 18 car.>-<NNNN>.npy` par JSON
+  traité avec succès (extension `.json` exclue),
   dans le dossier de sortie ; matrice de shape
   `(n_chunks, dimension du modèle)`, une ligne par chunk dans l'ordre
   du JSON.

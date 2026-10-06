@@ -1,6 +1,7 @@
 # Variables d'environnement
 .env
 .env.*
+!.env.example
 
 # Dossiers de données input/output
 input/
@@ -20,3 +21,11 @@ Ressources à date/
 
 # Artefacts Python
 __pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+
+# Artefacts d'execution de Vectorizator
+counter.txt

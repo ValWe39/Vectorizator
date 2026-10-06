@@ -105,8 +105,12 @@ les deux sources.
 
 ## R-08 : Nommage et écriture des sorties
 
-- Decision : fichier `<20 premiers caractères du titre sanitisé>-<numéro
-  à 4 chiffres>.npy` (ex. `Introduction aux Embeddi-0042.npy`). La
+- Decision : fichier `<18 premiers caractères du nom de fichier du
+  JSON d'entrée (stem sanitisé, sans extension)>-<numéro à 4
+  chiffres>.npy` (ex. `016472351681860015-0042.npy` pour
+  `016472351681860015.json`). Corrigé le 2026-10-06 (bug
+  titre-depuis-nom-json) : le nommage utilisait à tort le champ
+  `document.title` et 20 caractères. La
   sanitisation neutralise uniquement les caractères interdits par le
   système de fichiers (`/ \ : * ? " < > |` et caractères de contrôle,
   remplacés par `_`) ; les espaces sont conservés. Matrice écrite en

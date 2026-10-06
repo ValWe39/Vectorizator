@@ -44,8 +44,9 @@ envoie les textes des chunks à l'API Mistral d'embedding (modèle
 une ligne par chunk, une colonne par dimension du modèle. L'ordre des
 lignes correspond exactement à l'ordre des chunks dans le JSON d'entrée.
 Le fichier de sortie est enregistré dans le dossier de sortie, nommé selon
-la règle : 20 premiers caractères du titre du document source, tiret,
-numéro d'occurrence à 4 chiffres (ex. `Introduction aux Embeddi-0042.npy`).
+la règle : 18 premiers caractères du nom de fichier du JSON d'entrée
+(sans extension), tiret, numéro d'occurrence à 4 chiffres (ex.
+`016472351681860015-0042.npy` pour `016472351681860015.json`).
 
 **Why this priority**: C'est la valeur cœur de l'outil — transformer un
 index JSON en embeddings exploitables pour un RAG. Sans cette story,
@@ -65,10 +66,10 @@ que la dimension du modèle choisi, dans l'ordre des `ref`.
    vectorisation réussit, **Then** la ligne 1 de la matrice correspond au
    chunk 1, la ligne 2 au chunk 2, la ligne 3 au chunk 3 (correspondance
    stricte d'ordre, sans permutation).
-3. **Given** un document source titré "Introduction aux Embeddings",
-   **When** la sortie est produite, **Then** le nom du fichier de sortie
-   commence par les 20 premiers caractères de ce titre, suivis de `-` et
-   d'un numéro d'occurrence à 4 chiffres.
+3. **Given** un JSON nommé `016472351681860015.json`, **When** la
+   sortie est produite, **Then** le nom du fichier de sortie commence par
+   les 18 premiers caractères de ce nom de fichier (sans extension),
+   suivis de `-` et d'un numéro d'occurrence à 4 chiffres.
 4. **Given** le compteur local d'occurrences est absent, **When** l'outil
    produit son premier document, **Then** le numéro d'occurrence utilisé
    est `0001`.
@@ -201,11 +202,13 @@ des lots, délais de retry, emplacement des fichiers).
 
 ### Edge Cases
 
-- Que se passe-t-il si le titre du document fait moins de 20 caractères ?
-  Le nom de sortie utilise le titre en entier (troncature au plus court).
-- Que se passe-t-il si le titre contient des caractères invalides pour un
-  nom de fichier ? Ils sont neutralisés (remplacés/supprimés) pour
-  garantir un nom de fichier valide.
+- Que se passe-t-il si le nom de fichier du JSON fait moins de 18
+  caractères ? Le nom de sortie utilise le stem en entier (troncature au
+  plus court).
+- Que se passe-t-il si le nom de fichier contient des caractères
+  interdits pour un nom de fichier ? Ils sont neutralisés
+  (remplacés/supprimés) pour garantir un nom de fichier valide ;
+  l'extension `.json` n'apparaît jamais dans le nom de sortie.
 - Comment le système gère-t-il un JSON invalide, illisible, ou non
   conforme au schéma 1.0 ? Échec rapide avec message explicite pour ce
   fichier ; les autres inputs d'une exécution multi-input sont traités
@@ -223,9 +226,9 @@ des lots, délais de retry, emplacement des fichiers).
 - Comment le système gère-t-il un JSON dont les chunks produiraient plus
   de lots que la limite d'un appel API ? Le lot est l'unité de découpe
   retenue (1 à 100 chunks par lot), inchangée par ailleurs.
-- Que se passe-t-il si deux exécutions produisent le même titre ? Les
-  numéros d'occurrence distincts garantissent l'absence de collision de
-  noms au sein des exécutions.
+- Que se passe-t-il si deux exécutions traitent le même fichier JSON ?
+  Les numéros d'occurrence distincts garantissent l'absence de collision
+  de noms au sein des exécutions.
 - Comment le système gère-t-il la relance d'un JSON déjà complètement
   vectorisé avec succès ? Un nouveau document est produit avec un
   nouveau numéro d'occurrence, consommé à chaque exécution ; aucune
@@ -280,9 +283,11 @@ des lots, délais de retry, emplacement des fichiers).
   être invalidé et le document re-vectorisé depuis le premier lot, avec
   un message d'avertissement.
 - **FR-010**: Le nom de chaque matrice de sortie DOIT être composé des
-  20 premiers caractères du titre du document source (champ
-  `document.title` du JSON), suivis d'un tiret `-`, suivis d'un numéro
-  d'occurrence à 4 chiffres.
+  18 premiers caractères du nom de fichier du JSON d'entrée, sans son
+  extension (stem), sanitisés, suivis d'un tiret `-`, suivis d'un numéro
+  d'occurrence à 4 chiffres. Le champ `document.title` reste validé à
+  l'entrée mais ne sert pas au nommage (fix titre-depuis-nom-json,
+  2026-10-06).
 - **FR-011**: Le numéro d'occurrence DOIT être attribué à chaque
   document produit, dans l'ordre de création, sans doublon au sein d'une
   exécution. Le dernier numéro utilisé DOIT être mémorisé dans un
@@ -319,7 +324,8 @@ des lots, délais de retry, emplacement des fichiers).
 ### Key Entities *(include if feature involves data)*
 
 - **JSON d'index (input)**: Fichier au schéma 1.0 — `schema_version`,
-  `document` (dont `title`, source du nom de sortie), `params`
+  `document` (dont `title`, optionnel, non utilisé pour le
+  nommage), `params`
   (paramètres de découpage, non interprétés), `chunks` (liste ordonnée).
   Unité d'entrée du processus, un input = un traitement indépendant.
 - **Chunk**: Fragment de texte d'un document source, portant `ref`
@@ -336,8 +342,8 @@ des lots, délais de retry, emplacement des fichiers).
   reprise.
 - **Matrice de sortie**: Matrice NumPy (nombre de chunks x dimension du
   modèle), une ligne par chunk dans l'ordre exact du JSON d'entrée ;
-  nommée par titre tronqué + numéro d'occurrence ; enregistrée dans le
-  dossier de sortie.
+  nommée par nom de fichier tronqué (18 caractères, sans extension) +
+  numéro d'occurrence ; enregistrée dans le dossier de sortie.
 - **Compteur d'occurrence**: Dernier numéro d'occurrence utilisé,
   persisté dans un fichier texte à la racine de l'outil ; cycle
   0001→9999→0000→0001 ; source de vérité unique pour l'unicité des
@@ -373,9 +379,10 @@ des lots, délais de retry, emplacement des fichiers).
 - **SC-006**: La clé API n'apparaît dans aucun fichier écrit par l'outil
   (sorties, logs, état de reprise, compteur) — vérifiable par
   inspection.
-- **SC-007**: Chaque matrice produite respecte la règle de nommage (20
-  premiers caractères du titre + `-` + numéro à 4 chiffres) et la
-  dimension du modèle choisi (1024, 256 ou 128 colonnes).
+- **SC-007**: Chaque matrice produite respecte la règle de nommage (18
+  premiers caractères du nom de fichier, sans extension + `-` + numéro à
+  4 chiffres) et la dimension du modèle choisi (1024, 256 ou 128
+  colonnes).
 - **SC-008**: Toute condition d'erreur (JSON invalide, compteur
   corrompu, clé absente, option hors bornes) aboutit à un échec rapide
   avec un message explicite, sans fichier de sortie parasite.
@@ -385,9 +392,10 @@ des lots, délais de retry, emplacement des fichiers).
 - Les JSON d'input respectent le schéma 1.0 décrit (les 4 exemples de
   `Examples/` en sont la référence) ; les champs `params` sont lus mais
   non interprétés par l'outil.
-- Le titre du `.md` d'entrée est disponible via `document.title` du
-  JSON ; s'il comporte moins de 20 caractères, il est pris en entier ;
-  les caractères interdits dans un nom de fichier sont neutralisés.
+- Le nom de sortie reprend les 18 premiers caractères du nom de
+  fichier du JSON d'entrée, sans extension ; le champ `document.title`
+  reste validé mais ne sert pas au nommage (fix 2026-10-06) ; les
+  caractères interdits dans un nom de fichier sont neutralisés.
 - La matrice de sortie est persistée sous forme de fichier NumPy
   (`.npy`), un fichier par document traité.
 - "Requête embedding simple" (`--taille-batch 0`) signifie une requête

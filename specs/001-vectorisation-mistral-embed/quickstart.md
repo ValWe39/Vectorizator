@@ -16,9 +16,11 @@ contracts/cli-contract.md (schéma de commandes), data-model.md (entités).
 vector Examples/016472351681860015.json
 ```
 
-Attendu : exit 0 ; un fichier `output/<titre>-NNNN.npy` créé, chargable
-avec `numpy.load`, de shape `(n_chunks, 1024)` — n_chunks = nombre de
-chunks du JSON d'entrée ; ordre des lignes = ordre des chunks.
+Attendu : exit 0 ; un fichier `output/<stem du nom de fichier,
+18 car.>-NNNN.npy` créé (ex. `016472351681860015-0001.npy`),
+chargeable avec `numpy.load`, de shape `(n_chunks, 1024)` —
+n_chunks = nombre de chunks du JSON d'entrée ; ordre des lignes =
+ordre des chunks.
 
 ## Scénario 2 : multi-input (dossier)
 
