@@ -17,3 +17,6 @@ Ressources à date/
 !.specify/memory/
 !.specify/assessments/
 !.specify/bugs/
+
+# Artefacts Python
+__pycache__/
