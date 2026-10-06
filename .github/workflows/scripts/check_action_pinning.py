@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Verifie que toutes les actions dans les workflows GitHub Actions sont pinnees a un commit SHA.
+Verifie que toutes les actions dans les workflows GitHub Actions sont
+pinnées à un commit SHA.
 Usage: python check_action_pinning.py
 """
 
