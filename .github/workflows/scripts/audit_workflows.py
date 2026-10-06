@@ -63,7 +63,8 @@ def main():
 
     all_errors = []
     for workflow_file in workflows_dir.glob("*.yml"):
-        # Exclure diagnostic.yml : contient GITHUB_TOKEN autorise par la constitution (Amendement 1)
+        # Exclure diagnostic.yml : contient GITHUB_TOKEN autorise
+        # par la constitution (Amendement 1)
         if workflow_file.name == "diagnostic.yml":
             continue
         errors = audit_workflow(workflow_file)

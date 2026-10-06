@@ -30,7 +30,8 @@ ALLOWED_PLACEHOLDERS = {
 # Fichiers à exclure des vérifications pour éviter les faux positifs
 # (ex: le script check_constitution.py contient le mot "cloud" dans CLOUD_SERVICES)
 # (ex: la constitution documentent les règles, donc contient les termes interdits)
-# (ex: check_action_pinning.py vérifie les actions, donc contient des références aux workflows)
+# (ex: check_action_pinning.py vérifie les actions, donc contient des
+# références aux workflows)
 EXCLUDED_FILES = {
     Path(".github/workflows/scripts/check_constitution.py"),
     Path(".github/workflows/scripts/audit_workflows.py"),
