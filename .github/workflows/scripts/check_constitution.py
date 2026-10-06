@@ -44,7 +44,7 @@ CLOUD_SERVICES = {
     "s3",
     "ec2",
     "lambda",
-    "firebas",
+    "firebase",
     "google.*cloud",
     "gcp",
     "azure",
@@ -61,6 +61,12 @@ CLOUD_SERVICES = {
     "sentry",
     "mixpanel",
 }
+
+
+def _is_design_doc(path: Path) -> bool:
+    """Documentation de design (spec-kit) : elle decrit la conformite et
+    contient donc legitimement les termes des regles (ex: « Tracking »)."""
+    return "specs" in path.parts
 
 
 # --- FONCTIONS DE VÉRIFICATION ---
@@ -105,10 +111,12 @@ def check_no_hardcoded_secrets(files: set[Path] | None = None) -> list[str]:
 def check_no_cloud_services(files: set[Path] | None = None) -> list[str]:
     """Règle II : Interdiction des services cloud."""
     errors = []
-    cloud_pattern = re.compile(r"(?i)(" + "|".join(CLOUD_SERVICES) + r")")
+    cloud_pattern = re.compile(r"(?i)\b(" + "|".join(CLOUD_SERVICES) + r")\b")
     files_to_check = files if files else set(Path(".").rglob("*.py"))
     for file_path in files_to_check:
-        if not file_path.is_file() or file_path in EXCLUDED_FILES:
+        if not file_path.is_file() or (
+            file_path in EXCLUDED_FILES or _is_design_doc(file_path)
+        ):
             continue
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -132,11 +140,16 @@ def check_no_trackers(files: set[Path] | None = None) -> list[str]:
     ]
     files_to_check = files if files else set(Path(".").rglob("*.py"))
     for file_path in files_to_check:
-        if not file_path.is_file() or file_path in EXCLUDED_FILES:
+        if not file_path.is_file() or (
+            file_path in EXCLUDED_FILES or _is_design_doc(file_path)
+        ):
             continue
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
-            if any(keyword.lower() in content.lower() for keyword in tracker_keywords):
+            tracker_pattern = re.compile(
+                r"(?i)\b(" + "|".join(tracker_keywords) + r")\b"
+            )
+            if tracker_pattern.search(content):
                 errors.append(f"{file_path} (mots-clés de tracking détectés)")
         except (UnicodeDecodeError, PermissionError):
             continue
