@@ -34,7 +34,7 @@ P1 à P3 de spec.md) pour implémentation et test indépendants.
 **Purpose**: s'assurer d'un point de départ propre avant toute
 modification du socle existant (feature 001)
 
-- [ ] T001 Lancer la baseline de tests avant tout changement :
+- [x] T001 Lancer la baseline de tests avant tout changement :
   `pytest` depuis la racine du dépôt — toutes les suites (unit +
   integration) doivent être vertes ; toute failure existante doit
   être résolue avant de commencer (fichiers : tests/)
@@ -46,7 +46,7 @@ modification du socle existant (feature 001)
 **CRITICAL**: aucune user story ne peut commencer avant la fin de
 cette phase
 
-- [ ] T002 Ajouter l'option `--rapport` au parseur dans
+- [x] T002 Ajouter l'option `--rapport` au parseur dans
   src/vectorizator/cli.py, fonction `build_parser` : flag booléen
   (`action="store_true"`, défaut `False`), aide documentant le rapport
   JSON par matrice réussie ; aucune borne à valider, aucune valeur
@@ -64,7 +64,7 @@ absolu ni clé
 
 ### Tests for User Story 1 (à écrire AVANT l'implémentation, doivent échouer)
 
-- [ ] T003 [P] [US1] Tests unitaires de `save_report` dans
+- [x] T003 [P] [US1] Tests unitaires de `save_report` dans
   tests/unit/test_output.py : nommage `<stem matrice>.json` dérivé de
   la même construction que la matrice ; cinq clés `entrée`, `sortie`,
   `embed`, `dimension`, `nature` avec valeurs exactes (nom de fichier
@@ -72,14 +72,14 @@ absolu ni clé
   preset, nom du dtype de la matrice) ; UTF-8, indentation 2,
   retour à la ligne final ; jamais de chemin absolu ni de clé API
   (data-model.md §1, FR-004 à FR-006, FR-009)
-- [ ] T004 [P] [US1] Test d'intégration dans tests/integration/
+- [x] T004 [P] [US1] Test d'intégration dans tests/integration/
   (client SDK simulé, aucun réseau) : `vector <json> --rapport` →
   exit 0, une matrice + un rapport de même nom dans le dossier de
   sortie ; numéro d'occurrence identique entre les deux
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Implémenter `save_report` dans
+- [x] T005 [US1] Implémenter `save_report` dans
   src/vectorizator/output.py (dépend de T003) : nom dérivé de
   `build_output_name` avec extension `.json` (jamais recalculé
   indépendamment — research.md R-02) ; dictionnaire des cinq champs
@@ -89,13 +89,13 @@ absolu ni clé
   `nature` = `matrix.dtype.name` de la matrice écrite (research.md
   R-03) ; écriture UTF-8, `json.dumps` indent 2, retour à la ligne
   final (research.md R-01)
-- [ ] T006 [US1] Brancher le rapport dans src/vectorizator/cli.py :
+- [x] T006 [US1] Brancher le rapport dans src/vectorizator/cli.py :
   quand `args.rapport` est actif, appeler `save_report` immédiatement
   après `save_matrix` et avant `checkpoint.remove` (FR-007, research.md
   R-04) ; une `OSError` à l'écriture compte le document en échec avec
   message explicite, matrice conservée, checkpoint conservé, lot
   continué, exit 2 (FR-011, research.md R-05)
-- [ ] T007 [US1] Valider US1 : `pytest` vert (T003, T004) et
+- [x] T007 [US1] Valider US1 : `pytest` vert (T003, T004) et
   quickstart.md scénario 1 exécuté avec succès
 
 **Checkpoint**: US1 fonctionnelle et testable indépendamment — MVP
@@ -111,7 +111,7 @@ exactement un `.npy`, aucun `.json` de rapport, exit 0
 
 ### Tests for User Story 2
 
-- [ ] T008 [P] [US2] Tests de non-régression dans
+- [x] T008 [P] [US2] Tests de non-régression dans
   tests/unit/test_cli.py : défaut du parseur `False` sans
   `--rapport` ; une exécution sans `--rapport` ne produit aucun
   fichier `.json` de rapport (SC-003) ; messages console et codes de
@@ -119,7 +119,7 @@ exactement un `.npy`, aucun `.json` de rapport, exit 0
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Valider US2 : `pytest` complet vert et quickstart.md
+- [x] T009 [US2] Valider US2 : `pytest` complet vert et quickstart.md
   scénario 2 exécuté — aucune différence observable sans l'option
 
 **Checkpoint**: US1 et US2 indépendamment vérifiées
@@ -136,11 +136,11 @@ valide, rien pour l'invalide, exit 2
 
 ### Tests for User Story 3
 
-- [ ] T010 [US3] Test unitaire de l'échec d'écriture du rapport
+- [x] T010 [US3] Test unitaire de l'échec d'écriture du rapport
   (FR-011) dans tests/unit/test_cli.py : écriture du rapport rendue
   impossible (permissions/disque simulés) → document compté en échec
   avec message explicite, matrice conservée, exit 2 (research.md R-05)
-- [ ] T011 [P] [US3] Test d'intégration multi-input à échec partiel
+- [x] T011 [P] [US3] Test d'intégration multi-input à échec partiel
   dans tests/integration/ (client SDK simulé) : lot d'un JSON valide
   et d'un JSON invalide avec `--rapport` → 1 paire matrice/rapport,
   aucune sortie pour l'invalide, exit 2 ; les numéros d'occurrence des
@@ -148,7 +148,7 @@ valide, rien pour l'invalide, exit 2
 
 ### Implementation for User Story 3
 
-- [ ] T012 [US3] Valider US3 : `pytest` vert et quickstart.md
+- [x] T012 [US3] Valider US3 : `pytest` vert et quickstart.md
   scénarios 4 et 5 exécutés (échec partiel ; re-vectorisation sans
   écrasement, numéros consécutifs)
 
@@ -158,7 +158,7 @@ valide, rien pour l'invalide, exit 2
 
 **Purpose**: validation transversale avant clôture
 
-- [ ] T013 Exécuter quickstart.md en entier (scénarios 1 à 6) et les
+- [x] T013 Exécuter quickstart.md en entier (scénarios 1 à 6) et les
   hooks pre-commit sur le code final (ruff, markdownlint,
   check-constitution) ; vérifier qu'aucun rapport de test ne pollue
   `output/` du dépôt

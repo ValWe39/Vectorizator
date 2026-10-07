@@ -18,7 +18,7 @@ from vectorizator.config import (
 from vectorizator.counter import CounterError, next_occurrence
 from vectorizator.embedder import EmbeddingError, embed_texts
 from vectorizator.inputs import InputsError, collect_inputs
-from vectorizator.output import save_matrix
+from vectorizator.output import save_matrix, save_report
 from vectorizator.schema import SchemaError, validate_index
 
 EXIT_OK = 0
@@ -73,6 +73,14 @@ def build_parser() -> argparse.ArgumentParser:
         default="output",
         help="Dossier de sortie, créé si absent (défaut : output).",
     )
+    parser.add_argument(
+        "--rapport",
+        action="store_true",
+        help=(
+            "Écrire un rapport JSON de traçabilité à côté de chaque "
+            "matrice produite, portant le même nom (extension .json)."
+        ),
+    )
     return parser
 
 
@@ -110,6 +118,7 @@ def process_document(
     batch_size: int,
     retry_occurrences: int,
     retry_time: int,
+    report: bool = False,
 ) -> Path:
     """Traite un JSON : valider -> reprendre -> vectoriser -> sauvegarder.
 
@@ -122,6 +131,12 @@ def process_document(
     Le numéro d'occurrence est consommé et persisté juste avant
     l'écriture de la matrice : jamais réutilisé, même si l'écriture est
     interrompue (FR-011, R-07).
+
+    Option --rapport (feature 002) : quand `report` est actif, le
+    sidecar JSON est écrit immédiatement après la matrice et avant la
+    suppression du checkpoint (FR-007, research.md R-04) ; une erreur
+    locale d'écriture compte le document en échec, matrice conservée,
+    checkpoint conservé, lot continué (FR-011, research.md R-05).
     """
     data = json.loads(source.read_text(encoding="utf-8"))
     _title, texts = validate_index(data, str(source))
@@ -153,6 +168,13 @@ def process_document(
     vectors = stored + fresh_vectors
     occurrence = next_occurrence(Path.cwd())
     path = save_matrix(output_dir, Path(source).stem, occurrence, vectors)
+    if report:
+        try:
+            save_report(source, path, model, dimension)
+        except OSError as exc:
+            raise OSError(
+                f"rapport de traçabilité non écrit pour {source} : {exc}"
+            ) from exc
     checkpoint.remove(output_dir, source)
     print(f"[OK] {source} -> {path}")
     return path
@@ -203,6 +225,7 @@ def run(args: argparse.Namespace) -> int:
                     args.taille_batch,
                     args.retry_occurences,
                     args.retry_time,
+                    report=args.rapport,
                 )
             except (
                 SchemaError,
