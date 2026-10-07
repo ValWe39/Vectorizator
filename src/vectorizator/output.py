@@ -3,10 +3,14 @@
 Le nom de sortie reprend les 18 premiers caractères du nom de fichier
 du JSON d'entrée, sans son extension (« stem »), sanitisés — et non le
 champ document.title (fix titre-depuis-nom-json, 2026-10-06).
+
+Feature --rapport : sidecar JSON de traçabilité par matrice
+(data-model.md §1 du feature 002, research.md R-01 à R-03).
 """
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -49,4 +53,35 @@ def save_matrix(
     path = output_dir / build_output_name(source_stem, occurrence)
     matrix = np.asarray(vectors, dtype=np.float32)
     np.save(path, matrix)
+    return path
+
+
+def save_report(
+    source: Path,
+    matrix_path: Path,
+    model: str,
+    dimension: int,
+) -> Path:
+    """Écrit le sidecar JSON de traçabilité de la matrice (FR-003/FR-004).
+
+    Le rapport porte le même nom que la matrice, extension `.json`,
+    dérivé du chemin construit par `build_output_name` — jamais
+    recalculé indépendamment (research.md R-02). Les cinq champs
+    reflètent l'exécution réelle : « nature » est le dtype de la
+    matrice écrite, lu depuis le fichier (research.md R-03). UTF-8,
+    indentation 2, retour à la ligne final (research.md R-01) ; jamais
+    de chemin absolu ni de clé (FR-005, FR-009).
+    """
+    report = {
+        "entrée": source.name,
+        "sortie": matrix_path.name,
+        "embed": model,
+        "dimension": dimension,
+        "nature": np.load(matrix_path).dtype.name,
+    }
+    path = matrix_path.with_suffix(".json")
+    path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return path

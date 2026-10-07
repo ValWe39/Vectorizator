@@ -1,12 +1,19 @@
-"""Tests unitaires de vectorizator.output (T012, fix titre-depuis-nom-json)."""
+"""Tests unitaires de vectorizator.output (T012, fix titre-depuis-nom-json ;
+T003, save_report du feature --rapport)."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
 
-from vectorizator.output import build_output_name, sanitize_name, save_matrix
+from vectorizator.output import (
+    build_output_name,
+    sanitize_name,
+    save_matrix,
+    save_report,
+)
 
 
 def test_troncature_a_18_caracteres_du_stem() -> None:
@@ -67,3 +74,71 @@ def test_save_matrix_preserve_l_ordre(tmp_path: Path) -> None:
     path = save_matrix(tmp_path, "doc", "0001", vectors)
     matrix = np.load(path)
     assert matrix[1][0] == np.float32(20.0)
+
+
+# --- Feature --rapport : save_report (T003, data-model.md §1) ---
+
+
+def _write_sample_matrix(tmp_path: Path) -> Path:
+    return save_matrix(tmp_path, "sample_index", "0001", [[1.5, 2.5]])
+
+
+def test_save_report_nom_identique_a_la_matrice(tmp_path: Path) -> None:
+    """Le rapport porte le même nom que la matrice, en .json (FR-003)."""
+    matrix_path = _write_sample_matrix(tmp_path)
+    source = tmp_path / "sample_index.json"
+
+    path = save_report(source, matrix_path, "mistral-embed", 1024)
+
+    assert path == tmp_path / "sample_index-0001.json"
+    assert path.exists()
+
+
+def test_save_report_cinq_champs_exacts(tmp_path: Path) -> None:
+    """Cinq clés, valeurs reflétant l'exécution réelle (FR-004 à FR-006)."""
+    matrix_path = _write_sample_matrix(tmp_path)
+    source = tmp_path / "sample_index.json"
+
+    save_report(source, matrix_path, "mistral-embed-dim256-2510", 256)
+
+    rapport = json.loads((tmp_path / "sample_index-0001.json").read_text("utf-8"))
+    assert rapport == {
+        "entrée": "sample_index.json",
+        "sortie": "sample_index-0001.npy",
+        "embed": "mistral-embed-dim256-2510",
+        "dimension": 256,
+        "nature": "float32",
+    }
+
+
+def test_save_report_utf8_indente_final_newline(tmp_path: Path) -> None:
+    """UTF-8, indentation 2, retour à la ligne final (research.md R-01)."""
+    matrix_path = _write_sample_matrix(tmp_path)
+    content = save_report(
+        tmp_path / "sample_index.json", matrix_path, "mistral-embed", 1024
+    ).read_text(encoding="utf-8")
+
+    assert content.endswith("\n")
+    assert '\n  "entrée"' in content
+    content.encode("utf-8")
+
+
+def test_save_report_aucun_chemin_absolu_ni_cle(tmp_path: Path) -> None:
+    """Jamais de chemin absolu ni de clé API dans le rapport (FR-009)."""
+    matrix_path = _write_sample_matrix(tmp_path)
+
+    path = save_report(tmp_path / "sample_index.json", matrix_path, "m", 1024)
+
+    content = path.read_text(encoding="utf-8")
+    assert str(tmp_path) not in content
+    assert "MISTRAL_API_KEY" not in content
+    assert "cle-de-test" not in content
+
+
+def test_save_report_lu_depuis_la_matrice_ecrite(tmp_path: Path) -> None:
+    """La nature est le dtype de la matrice écrite, pas une constante."""
+    matrix_path = save_matrix(tmp_path, "doc", "0001", [[1.0]])
+    assert np.load(matrix_path).dtype.name == "float32"
+    save_report(tmp_path / "doc.json", matrix_path, "mistral-embed", 1024)
+    rapport = json.loads((tmp_path / "doc-0001.json").read_text("utf-8"))
+    assert rapport["nature"] == np.load(matrix_path).dtype.name
