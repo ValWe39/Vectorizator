@@ -9,7 +9,7 @@
 ## Scorecard
 
 | Criterion | Rating | Justification |
-|-----------|--------|---------------|
+| --------- | ------ | ------------- |
 | Problem validity | adequate | Problème interne réel, audience de un |
 | Evidence strength | adequate | Faits internes solides, demande moyenne |
 | Value vs. inaction | strong | Perte irréversible ; recours payant |
